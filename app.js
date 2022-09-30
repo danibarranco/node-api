@@ -5,19 +5,19 @@ const dbConnect = require('./config/mongo')
 const app = express()
 
 app.use(cors())
-
 // Can get json via request
 app.use(express.json())
-
 app.use(express.static('storage'))
-
 const port = process.env.PORT || 3000
-
 /**
  * Routes import
  */
-
 app.use('/api', require('./routes'))
+
+const options = {
+  index: 'coming-soon.html'
+}
+app.use('/', express.static('app', options))
 
 app.listen(port, () => {
   console.log(`all ok on port: ${port}`)
