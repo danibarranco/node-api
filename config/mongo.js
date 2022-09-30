@@ -7,7 +7,7 @@ const dbConnect = () => {
     useUnifiedTopology: true
   }, (err, res) => {
     if (!err) console.log('connected to database!')
-    else console.log('database error connection')
+    else console.log('database error connection', err)
   })
 }
 
