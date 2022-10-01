@@ -14,14 +14,7 @@ const port = process.env.PORT || 3000
  */
 app.use('/api', require('./routes'))
 
-app.get('/', function (req, res) {
-  res.sendFile('coming-soon.html', { root: __dirname })
-})
-
-//
-// app.use('/', express.static('app', options))
-
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`all ok on port: ${port}`)
 })
 
