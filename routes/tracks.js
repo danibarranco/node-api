@@ -1,5 +1,4 @@
 const { createTrackValidator, findTrackValidator } = require('../validators/tracks')
-// const { customHeader } = require("../middleware/customHeader");
 
 const express = require('express')
 const router = express.Router()

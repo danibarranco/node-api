@@ -1,13 +1,24 @@
+const fs = require('fs')
+const { matchedData } = require('express-validator')
 const { storageModel } = require('../models')
+const { handleHttpError } = require('../utils/handleError')
+const path = require('path')
+
 const PUBLIC_URL = process.env.PUBLIC_URL
+const PATH_STORAGE = path.join(__dirname, '/../storage')
+
 /**
  * Get files list
  * @param {*} req
  * @param {*} res
  */
 const getFiles = async (req, res) => {
-  const data = await storageModel.find({})
-  res.send({ data })
+  try {
+    const data = await storageModel.find({})
+    res.send({ data })
+  } catch (error) {
+    handleHttpError(res, error.message)
+  }
 }
 
 /**
@@ -15,7 +26,15 @@ const getFiles = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const findFile = (req, res) => {}
+const findFile = async (req, res) => {
+  try {
+    const { id } = matchedData(req)
+    const data = await storageModel.findById(id)
+    res.send({ data })
+  } catch (error) {
+    handleHttpError(res, error.message)
+  }
+}
 
 /**
  * Create file
@@ -24,6 +43,7 @@ const findFile = (req, res) => {}
  */
 const createFile = async (req, res) => {
   const { file } = req
+
   try {
     const data = await storageModel.create({
       filename: file.filename,
@@ -32,8 +52,7 @@ const createFile = async (req, res) => {
 
     res.send({ data })
   } catch (error) {
-    console.log(error)
-    res.status(400).send(error.message)
+    handleHttpError(res, error.message, 400)
   }
 }
 
@@ -42,7 +61,22 @@ const createFile = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const deleteFile = (req, res) => {}
+const deleteFile = async (req, res) => {
+  try {
+    const { id } = matchedData(req)
+
+    // First unlink the file from server
+    const data = await storageModel.findById(id)
+    if (!data) throw Error('File not exist')
+    fs.unlinkSync(path.join(PATH_STORAGE, data.filename))
+
+    // Then delete de storage entry
+    const deleteRes = await storageModel.deleteOne({ _id: id })
+    res.send({ deleteRes })
+  } catch (error) {
+    handleHttpError(res, error.message)
+  }
+}
 
 /**
  * Update file
